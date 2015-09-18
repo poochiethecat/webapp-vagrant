@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require ./scripts/puppet_dependencies.rb
+require './scripts/puppet_dependencies.rb'
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -15,6 +15,7 @@ Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/trusty64"
+  config.vm.network "forwarded_port", guest: 80, host: 3000
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -69,25 +70,14 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
 
+  # config.vm.provision :shell do |s|
+  #   s.inline = %{
+  #   }
+  # end
+
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = 'puppet/manifests'
-    puppet.module_path = 'puppet/modules'
+    puppet.options="--verbose --debug"
   end
 
-  $script = <<SCRIPT
-  mkdir -p /vagrant/puppet/modules;
-  function install_module {
-    folder=`echo $1 | sed s/.*-//`
-    if [ ! -d /vagrant/puppet/modules/$folder ]; then
-      puppet module install $1 --modulepath="/vagrant/puppet/modules"
-    fi
-  }
-  SCRIPT
-
-  #config.vm.provision "shell" do |s|
-  #  s.path = "/vagrant/provisioning.sh 2>&1 | tee /vagrant/provisioning.log"
-  #  s.binary = "false"
-  #  s.privileged = "true"
-  #  s.keep_color = "false"
-  #end
 end
