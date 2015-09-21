@@ -17,6 +17,9 @@ Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.network "forwarded_port", guest: 80, host: 3000
 
+  config.vm.define "webapp-vagrant" do |host|
+  end
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -74,9 +77,12 @@ Vagrant.configure(2) do |config|
   #   s.inline = %{
   #   }
   # end
+  config.vm.provision :shell, :inline => "mkdir -p /vagrant/puppet/modules"
+  config.vm.provision :shell, :inline => install_dep('puppetlabs-apache', '')
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = 'puppet/manifests'
+    puppet.module_path = 'puppet/modules'
     puppet.options="--verbose --debug"
   end
 

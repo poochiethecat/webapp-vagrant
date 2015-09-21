@@ -1,14 +1,15 @@
+Exec { path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/" ] }
+
 exec { "apt-get update":
-  path => "/usr/bin",
 }
-package { "apache2":
-  ensure  => present,
-  require => Exec["apt-get update"],
-}
-service { "apache2":
-  ensure  => "running",
-  require => Package["apache2"],
-}
+# package { "apache2":
+#   ensure  => present,
+#   require => Exec["apt-get update"],
+# }
+# service { "apache2":
+#   ensure  => "running",
+#   require => Package["apache2"],
+# }
 
 package { "git":
   ensure  => present,
@@ -35,12 +36,15 @@ package { "php5-curl":
 package { "curl":
 	ensure => present,
 }
-exec { "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer":
-  path => "/usr/bin/local",
+exec { "sudo bash -c 'curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer'":
   require => [	Package["php5-curl"],
-  				Package["curl"]
+  				      Package["curl"]
   			]
 }
+
+class { "apache": }
+class { "apache::mod::rewrite": }
+apache::mod { 'php5': }
 
 file { "/var/www/respond":
   ensure  => "link",
